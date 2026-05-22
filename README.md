@@ -1,7 +1,7 @@
 <h2 align="left">Hi 👋! My name is Billy and I'm a Computer Science Student, from Medan, Indonesia!</h2>
 
 <p align="left">
-Passionate Computer Science student focused on Software Development, Mobile Development, and AI.
+Passionate Computer Science student focused on Software Development, AI, and Game Developer.
 </p>
 
 ###
