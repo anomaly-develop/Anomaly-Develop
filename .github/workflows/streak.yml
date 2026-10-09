@@ -1,0 +1,43 @@
+name: Generate streak card
+
+on:
+  schedule:
+    - cron: "41 */12 * * *"
+
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: fetch streak card (light)
+        run: |
+          curl -fsSL "https://streak-stats.demolab.com/?user=${{ github.repository_owner }}&theme=default&hide_border=true" -o dist-light/streak.svg
+
+      - name: fetch streak card (dark)
+        run: |
+          curl -fsSL "https://streak-stats.demolab.com/?user=${{ github.repository_owner }}&theme=dark&hide_border=true" -o dist-dark/streak.svg
+
+      - name: push light streak to streak-output-light
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: streak-output-light
+          build_dir: dist-light
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: push dark streak to streak-output-dark
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: streak-output-dark
+          build_dir: dist-dark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
