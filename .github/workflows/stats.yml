@@ -1,14 +1,14 @@
 name: Generate stats card
 
 on:
-  schedule: # execute every 12 hours
-    - cron: "* */12 * * *"
+  schedule:
+    - cron: "17 */12 * * *"
 
   workflow_dispatch:
 
   push:
     branches:
-    - main
+      - main
 
 jobs:
   generate:
@@ -18,19 +18,35 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: generate stats.svg
-        uses: readme-tools/github-readme-stats-action@v1
+      # do not re-add count_private: it needs a PAT, and with GITHUB_TOKEN it renders an error card
+      - name: generate stats.svg (light)
+        uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: username=${{ github.repository_owner }}&hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false
-          path: dist/stats.svg
+          options: username=${{ github.repository_owner }}&hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&disable_animations=false&theme=default&locale=en&hide_border=false
+          path: dist-light/stats.svg
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: generate stats.svg (dark)
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&disable_animations=false&theme=dracula&locale=en&hide_border=false
+          path: dist-dark/stats.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: push stats.svg to the output branch
+      - name: push light stats to stats-output-light
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
-          target_branch: stats-output
-          build_dir: dist
+          target_branch: stats-output-light
+          build_dir: dist-light
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: push dark stats to stats-output-dark
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: stats-output-dark
+          build_dir: dist-dark
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
